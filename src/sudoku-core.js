@@ -50,14 +50,15 @@ export const isSolved = (state) => ![].concat(...state).includes(null);
 export const isValidPuzzle = (state) => {
   const flatState = state.reduce((flatState, row) => flatState.concat(row), []);
   if (!flatState.includes(null)) return false;  // a valid puzzle must have at least one blank cell
-  if (state.length !== 9) return false;
+  if (state.length !== 9) return false;  // Must have 9 rows
   const hasInvalidVals = state.some((row, y) => {  // return whether any cell values are not allowed for their coordinate
-    if (state.some((row) => row.length !== 9)) return true;
+    if (state.some((row) => row.length !== 9)) return true;  // Must have 9 columns
     return row.some((val, x) => {
+      if (val === null) return false;  // Ignore empty cells
       const stateCopy = copyState(state);
       stateCopy[y][x] = null;
-      return getAllowed(stateCopy, [y, x]).includes(val)
-    }) === false;
+      return getAllowed(stateCopy, [y, x]).includes(val) === false;  // If cell val isn't in allowed vals, return true
+    });
   });
   return !hasInvalidVals;
 };
@@ -152,100 +153,3 @@ const squareCoordMap = {
   8:[[6,3],[6,4],[6,5],[7,3],[7,4],[7,5],[8,3],[8,4],[8,5]],
   9:[[6,6],[6,7],[6,8],[7,6],[7,7],[7,8],[8,6],[8,7],[8,8]],
 };
-
-// // If first array contains second array
-// const arrayContainsArray = (containerArray, array) => {
-//   return containerArray
-//     .filter((item) => {
-//       return (
-//         Array.isArray(item) &&
-//         arrayIntersect(item, array).length === array.length
-//       );
-//     })
-//     .length > 0;
-// };
-
-// const arrayIntersect = (...arrs) => {
-//   return arrs.reduce((intersecting, arr) => {
-//     const set1 = new Set(intersecting), set2 = new Set(arr);
-//     return [...set1].filter(val => set2.has(val));
-//   }, arrs.pop());
-// };
-
-
-// const getXAllowed = (state, coord) => {
-//   const adjacent = getAdjacentValues(state, coord);
-//   return [1,2,3,4,5,6,7,8,9].filter(num => {
-//     return !adjacent.x.includes(num);
-//   });
-// };
-// const getYAllowed = (state, coord) => {
-//   const adjacent = getAdjacentValues(state, coord);
-//   return [1,2,3,4,5,6,7,8,9].filter(num => {
-//     return !adjacent.y.includes(num);
-//   });
-// };
-// const getSquareAllowed = (state, coord) => {
-//   const adjacent = getAdjacentValues(state, coord);
-//   return [1,2,3,4,5,6,7,8,9].filter(num => {
-//     return !adjacent.squareVals.includes(num);
-//   });
-// };
-
-// const getOptions = (state, coord) => {
-//   let allowed = getAllowed(state, coord);
-//   const adjCoordsInc = getAdjacentCoordsInclusive(coord);  // Get adjacent coordinates, both num and null
-//   const xMatching = findMatching(state, adjCoordsInc.x);
-//   const yMatching = findMatching(state, adjCoordsInc.y);
-//   const squareMatching = findMatching(state, adjCoordsInc.squareCoords);
-//
-//   [].concat(xMatching, yMatching, squareMatching).forEach(match => {
-//     if (!arraysAreIdentical(allowed, match)) {
-//       allowed = allowed.filter(val => !match.includes(val));
-//     }
-//   });
-//   return allowed;
-// };
-
-// const findMatching = (state, adjacent) => {
-//   const xNullCoords = filterNullCoords(state, adjacent, true);  // Null adjacent coordinates
-//   const xExistingVals = getValues(state, filterNullCoords(state, adjacent));  // Non-null values
-//   const xNonExistingVals = [1,2,3,4,5,6,7,8,9].filter(num => !xExistingVals.includes(num));  // Vals not in X yet
-//   const xEval = xNullCoords.map(coord => ({
-//     coord: coord,
-//     available: xNonExistingVals,
-//     options: getAllowed(state, coord),  // Legal values for coord
-//   }));
-//   return xEval.reduce((matching, coord) => {
-//     // Get all OTHER coords with matching options
-//     const matchingOps = xEval
-//       .filter(otherCoord => {
-//         return arraysAreIdentical(coord.options, otherCoord.options) &&
-//           !arraysAreIdentical(coord.coord, otherCoord.coord);
-//       });
-//
-//     if (matchingOps.length === coord.options.length - 1 &&
-//       !arrayContainsArray(matching, coord.options)) {
-//       return matching.concat([coord.options]);
-//     }
-//     return matching;
-//   }, []);
-// };
-
-// // Same as getAdjacentCoords but includes given coordinate
-// const getAdjacentCoordsInclusive = (coord) => {
-//   const [y, x] = coord;
-//   const xCoords = [0,1,2,3,4,5,6,7,8].map(y => [y, x]);
-//   const yCoords = [0,1,2,3,4,5,6,7,8].map(x => [y, x]);
-//   const squareCoords = getSquareCoords(getSquare(y, x));
-//   return {x: xCoords, y: yCoords, squareCoords: squareCoords};
-// };
-
-// const filterNullCoords = (state, coords, onlyNulls = false) => {
-//   if (onlyNulls) {
-//     return coords.filter(coord => getValue(state, coord) === null);
-//   }
-//   return coords.filter(coord => getValue(state, coord) !== null);
-// };
-
-// const getUniqueValues = (array) => Array.from(new Set(array));
