@@ -1,0 +1,13 @@
+{
+  "name": "sudoku-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/sudoku-core.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "devDependencies": {
+    "jest": "^23.4.1"
+  }
+}
