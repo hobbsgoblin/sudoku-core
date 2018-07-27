@@ -18,8 +18,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "webpack"
+    "build": "webpack --config webpack.config.js"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Dan Hoch"
 }
