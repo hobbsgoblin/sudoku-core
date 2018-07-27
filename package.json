@@ -20,6 +20,5 @@
     "test": "jest",
     "build": "webpack"
   },
-  "author": "",
-  "license": "ISC"
+  "author": ""
 }
