@@ -7,12 +7,13 @@ export const getAdjacentValues = (state, coord) => {
   return {x: xVals, y: yVals, squareVals: squareVals};
 };
 
+// Returns a puzzle state filled entirely with the given value
 export function getInitState(fillVal = null) {
   return Array(9).fill([]).map(() => [...(Array(9).fill(fillVal))]);
 }
 
 // Returns all of the coordinates in the same row, column, and square of a given coordinate
-export const getAdjacentCoords = (coord) => {
+export const getAdjacentCoords = coord => {
   const [y, x] = coord;
   const xCoords = [0,1,2,3,4,5,6,7,8].map(y => [y, x]).filter(coord => coord[0] !== y);
   const yCoords = [0,1,2,3,4,5,6,7,8].map(x => [y, x]).filter(coord => coord[1] !== x);
@@ -21,6 +22,7 @@ export const getAdjacentCoords = (coord) => {
   return {x: xCoords, y: yCoords, squareCoords: squareCoords};
 };
 
+// Returns all possible legal values for a coordinate
 export const getAllowed = (state, coord) => {
   const adjacent = getAdjacentValues(state, coord);
   const adjacentVals = [].concat(adjacent.x, adjacent.y, adjacent.squareVals);
@@ -29,6 +31,7 @@ export const getAllowed = (state, coord) => {
   });
 };
 
+// Recursively checks if arrays have the same elements
 export const arraysAreIdentical = (arr1, arr2) => {
   if (!Array.isArray(arr1) || !Array.isArray(arr2)) return undefined;
   if (arr1.length !== arr2.length) return false;
@@ -45,9 +48,16 @@ export const arraysAreIdentical = (arr1, arr2) => {
   return true;
 };
 
-export const isSolved = (state) => ![].concat(...state).includes(null);
+// A quick way to check if a puzzle is completed
+// Does not verify that the puzzle is completed correctly
+export const isSolved = state => ![].concat(...state).includes(null);
 
-export const isValidPuzzle = (state) => {
+// Returns if a puzzle is valid by checking:
+// // If the puzzle has at least one empty coordinate
+// // If the puzzle is 9 rows by 9 columns
+// // If the given values contradict each other
+// // Does NOT check if a puzzle is solvable
+export const isValidPuzzle = state => {
   const flatState = state.reduce((flatState, row) => flatState.concat(row), []);
   if (!flatState.includes(null)) return false;  // a valid puzzle must have at least one blank cell
   if (state.length !== 9) return false;  // Must have 9 rows
@@ -63,7 +73,8 @@ export const isValidPuzzle = (state) => {
   return !hasInvalidVals;
 };
 
-export const checkSolutionIsValid = (state) => {
+// Checks if the given state is a valid solution
+export const checkSolutionIsValid = state => {
   const valsAreValid = (arr) => {
     return arraysAreIdentical([1,2,3,4,5,6,7,8,9], arr.slice().sort());
   };
@@ -80,6 +91,9 @@ export const checkSolutionIsValid = (state) => {
 };
 
 // const copyState = (state)  => state.map(arr => [...arr]);
+
+// Return a deep copy of a given state
+// Avoids shared references in shallow copies
 export function copyState(state) {
   // if (Array.isArray(state)) return state.slice().map(val => copyState(val));
   // Switched to FOR loop for performance
@@ -95,7 +109,8 @@ export function copyState(state) {
   return state;
 }
 
-export const printState = (state) => {
+// Return a formatted string representation of a game state for display
+export const printState = state => {
   return state.reduce((text, row, index) => {
     if (index === 3 || index === 6) {
       text = text.concat("\n");  // Add horizontal spacing
@@ -111,13 +126,15 @@ export const printState = (state) => {
   }, '');
 };
 
-const isValidValue = (val) => [1,2,3,4,5,6,7,8,9].includes(val);
+// Simply returns if the given value is a integer 1 through 9
+const isValidValue = val => [1,2,3,4,5,6,7,8,9].includes(val);
 
+// Returns the values for a given array of coordinates
 const getValues = (state, coordinates) => {
   return coordinates.map(coord => getValue(state, coord));
 };
 
-// Get the value of a given coordinate from the given puzzle state
+// Get the value of a given coordinate from a given puzzle state
 const getValue = (state, coordinate) => state[coordinate[0]][coordinate[1]];
 
 // Get the square (1 through 9) that contains the given coordinates
@@ -131,11 +148,9 @@ const getSquare = (y, x) => {
 };
 
 // Get the coordinates contained within in a given square (1 through 9)
-const getSquareCoords = (square) => {
-  return squareCoordMap[square];
-};
+const getSquareCoords = square => squareCoordMap[square];
 
-export const parseState = (inputState) => {
+export const parseState = inputState => {
   return inputState.map(row => {
     return row.map(val => isValidValue(val) ? val : null);
   });
